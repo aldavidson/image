@@ -54,15 +54,35 @@ describe ImageController do
           )
         end
         let(:image_url) {
-          rails_blob_path(image.file, disposition: "attachment")
+          rails_blob_path(image.file, disposition: "inline")
         }
-        describe 'the response' do
-          let(:response) do
-            get :show, params: {id: image.id}
-          end
+        context 'in a json request' do
+          let(:format) { :json }
 
-          it 'redirects to the file url' do
-            expect(response.code).to redirect_to(image_url)
+          describe 'the response' do
+            let(:response) do
+              get :show, params: {id: image.id}, format: format
+            end
+
+            it 'has status 200' do
+              expect(response.code).to eq('200')
+            end
+
+            it 'is json' do
+              expect(response.content_type).to eq('application/json')
+            end
+
+            it 'is the image as JSON' do
+              expect(response.body).to eq(image.to_json)
+            end
+          end
+        end
+
+        context 'with the content type of the image' do
+          let(:format) { :json }
+
+          it 'redirects to the rails blob url' do
+
           end
         end
       end

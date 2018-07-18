@@ -6,5 +6,8 @@ Rails.application.routes.draw do
   # resources 'images', only: [:get, :post, :delete]
   post  '/images', to: 'image#create'
   get   '/images/:id', to: 'image#show'
-
+  get '/images/:id/*filename', to: 'image#download', as: :rails_public_blob
+  direct :public_blob do |blob, options|
+    route_for(:rails_public_blob, blob.key, blob.filename, options)
+  end
 end
