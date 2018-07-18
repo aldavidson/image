@@ -3,14 +3,9 @@ require 'rails_helper'
 describe ImageController do
   let(:fixtures_dir) { Rails.root.join('spec', 'fixtures') }
   let(:image_to_upload) { File.join(fixtures_dir, 'triple-facepalm.jpg') }
-  let(:image_md5) { '769407b5fa693f708b1ba2ec7cfc6407' }
   let(:image_b64) { File.read(File.join(fixtures_dir, 'triple-facepalm.b64')) }
 
   describe 'a POST request' do
-    context 'with the file encoded as form-data' do
-
-    end
-
     context 'with content_type JSON' do
       let(:format) { :json }
 
@@ -29,7 +24,7 @@ describe ImageController do
           end
 
           it 'has status 201 (created)' do
-            expect(response.code).to eq(201)
+            expect(response.code).to eq('201')
           end
 
           describe 'image_id' do
@@ -38,9 +33,36 @@ describe ImageController do
               expect(image_id).to_not be_nil
             end
 
-            it 'is the MD5 digest of the uploaded image' do
-              expect(image_id).to eq(image_md5)
+            it 'is the ID of the last-uploaded image' do
+              expect(image_id).to eq(Image.last.id)
             end
+          end
+        end
+      end
+    end
+  end
+
+  describe 'a GET request' do
+    context 'with an ID' do
+      let(:id) { nil }
+
+      context 'that exists' do
+        let(:image) do
+          ImageService.new.create!(
+            filename: 'triple-facepalm.jpg',
+            uri: "data:image/jpg;base64,#{image_b64}"
+          )
+        end
+        let(:image_url) {
+          rails_blob_path(image.file, disposition: "attachment")
+        }
+        describe 'the response' do
+          let(:response) do
+            get :show, params: {id: image.id}
+          end
+
+          it 'redirects to the file url' do
+            expect(response.code).to redirect_to(image_url)
           end
         end
       end

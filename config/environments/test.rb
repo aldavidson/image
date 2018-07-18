@@ -43,4 +43,11 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+
+  # Use inline job processing to make things happen immediately
+  config.active_job.queue_adapter = :inline
+
+  # Separate file storage in the test environment
+  config.active_storage.service = :test
 end
