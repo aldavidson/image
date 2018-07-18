@@ -1,3 +1,3 @@
 class Image < ActiveRecord::Base
-  mount_uploader :image
+  has_one_attached :file
 end

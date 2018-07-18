@@ -8,6 +8,6 @@ class ImageController < ApplicationController
   private
 
   def extract_image_from_request
-    if request.content_type == ''
+    
   end
 end
